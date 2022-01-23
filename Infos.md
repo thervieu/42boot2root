@@ -28,5 +28,7 @@
   + `	laurie@borntosec.net:!q\]Ej?*5K5cy*AJ`
 - PHPMyAdmin:
   + `root:Fg-'kKXBj87E:aJ$`
-- ssh:
+- login into vm (can't ssh with it):
   + `lmezard:G!@M6f4Eatau{sF"`
+- ssh:
+  + `laurie:330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4`
