@@ -9,21 +9,10 @@ for file in os.listdir("./ft_fun/"):
         thisFile = f.read()
         f.close()
     fileNumber = re.findall('//file([0-9]*)', thisFile)
-    if len(fileNumber) == 1:
-        fileContent[int(fileNumber[0])] = thisFile
-    else:
-        print('numerous file numbers')
-if os.path.exists('./read_fun') is True:
-    os.remove('./read_fun')
-with open('./read_fun', 'w') as f:
-    for line in open('./ft_fun/BJPCP.pcap').readlines():
-        if line.find('return') == -1:
-            continue
-        f.write(line)
+    fileContent[int(fileNumber[0])] = thisFile
+if os.path.exists('./main.c') is True:
+    os.remove('./main.c')
+with open('./main.c', 'w') as f:
     for key in sorted(fileContent):
-        if fileContent[key].find('Got') != -1 or fileContent[key].find('useless') != -1:
-            continue
-        if fileContent[key].find('return') == -1:
-            continue
         f.write(fileContent[key] +'\n')
     f.close()
