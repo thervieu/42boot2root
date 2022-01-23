@@ -45,3 +45,7 @@ at the end cheks that the order is decreasing -> '4 2 6 3 1 5'
 
 after testing a few possibilites password for thor is Publicspeakingisveryeasy.126241207201b2149opekmq426135
 3 and 1 are switched because subject is shit https://stackoverflow.com/c/42network/questions/664
+
+https://www.calormen.com/jslogo/ for turtle
+-> 'SLASH' that we must digest
+-> md5 'slash : 646da671ca01bb5d84dbb5fb2238dc8e
