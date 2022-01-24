@@ -166,7 +166,7 @@ Now that we are logged on the forum we can access her profile and we can retriev
 
 ![lmezard-email](./screens/lmezard-email.png)
 
-If we try to log on the webmail service with de credentials pair `laurie@borntosec.net:!q\]Ej?*5K5cy*AJ` we can access her mailbox where we find an interesting mail.
+If we try to log on the webmail service with the credentials pair `laurie@borntosec.net:!q\]Ej?*5K5cy*AJ` we can access her mailbox where we find an interesting mail.
 
 ```
 Subject:    DB Access
@@ -232,3 +232,5 @@ INTO OUTFILE '/var/www/forum/templates_c/webshell.php'
 ```
 
 > We find that `/forum/templates_c` is the only folder where this can be written. This basically create an HTML page with a textbox. When you click on the **Submit** button the input is evaluated directly in the shell where the website is hosted.
+
+We now have a shell in the working directory `/forum/templates_c`, we are logged as `www-data`. After listing a few directories, we find `/home/LOOKATME/password` that gives us the credentials pair `lmezard:G!@M6f4Eatau{sF"`. We can log into the vm directly, this doesn't work with ssh.
