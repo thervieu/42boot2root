@@ -438,7 +438,7 @@ We can finally concatenate all of the different phases:
 
 However it doesn't work, we must inverse len - 1 and len - 2 characters for some reason (https://stackoverflow.com/c/42network/questions/664).
 
-thor's password is `Publicspeakingisveryeasy.126241207201b2149opekmq426135`
+`thor`'s password is `Publicspeakingisveryeasy.126241207201b2149opekmq426135`
 
 ## thor
 laurie has two files in her home directory:
@@ -463,4 +463,4 @@ it writes 'slash', it did not work lowercased but `SLASHED` worked
 thor@BornToSecHackMe:~$ echo -n SLASH | md5sum
 646da671ca01bb5d84dbb5fb2238dc8e  -
 ```
-zaz's password is 646da671ca01bb5d84dbb5fb2238dc8e
+`zaz`'s password is `646da671ca01bb5d84dbb5fb2238dc8e`
