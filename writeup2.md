@@ -8,7 +8,7 @@ we acces recovery mode or 'grub mode'
 
 here we technically are already root, but let's open a shell.
 
-we can use command `live` with `init=/bin/bash`
+we can only use command `live`.
 
 `live` alone starts the machine normally, with `init=/bin/bash` you tell it what to starts with.
 
