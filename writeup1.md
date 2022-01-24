@@ -346,6 +346,94 @@ int phase3() {
     return 0;
 }
 ```
-There are 7 possible answers, we take the first one with the hint `1 b 214`
+There are 7 possible answers, we take the first one with the hint given `b` so `1 b 214`
 
 ### phase 4
+```
+int func4(int fibo_index) {
+    int fibo1;
+    if (fibo_index > 1) {
+            fibo1 = func4(ebx - 1);
+            fibo2 = func4(ebx - 2);
+            fibo1 = fibo1 + fibo2;
+    }
+    else {
+            fibo1 = 0x1;
+    }
+    return fibo1;
+}
+
+int phase_4() {
+    if ((sscanf(stdin, "%d", &fibo_index) == 1) && (fibo_index > 0)) {
+            int fibo55 = func4(fibo_index);
+            if (fibo555 != 55) {
+                    eax = explode_bomb();
+            }
+    }
+    else {
+            explode_bomb();
+    }
+    return eax;
+}
+```
+takes an int as input and returns the fibonacci number corresponding to that index. checks if it is 55, which is the 10th index. However their function doesn't go until [0, 1] for the starting numbers but [1, 1]. So we must input `9`.
+
+### phase 5
+```
+void phase_5() {
+    read_input(stdin, &str);
+    if (strlen(str) != 6) {
+        explode_bomb();
+    }
+    else {
+            int i = 0;
+            char *indexMe = "isrveawhobpnutfg";
+            do {
+                    str[i] = indexMe[str[i] & 0xf];
+                    i++;
+            } while (edx <= 5);
+            if strcmp(str, "giants" != 0) {
+                explode_bomb();
+            }
+    }
+    return;
+}
+```
+uses each character of the string we put in and does & 0xf with them which creates a number below 16 which is then used as index in "isrveawhobpnutfg". The newly constructed string must then be equal to giants. We did a quick script to get the possible options (phase5.py). There are four options, let's take `opekmq`.
+
+### phase6
+Hopper tells us that address 0x804b26c is called.
+phase6 takes 6 ints, checks that they are <= 6 then tries to permutate data in the esi then checks if that data is in decreasing order
+Hopper tells us that esi is set at address 0x804b26c.
+```
+laurie@BornToSecHackMe:~$ gdb -q bomb
+Reading symbols from /home/laurie/bomb...done.
+(gdb) b main
+Breakpoint 1 at 0x80489b7: file bomb.c, line 36.
+(gdb) r
+Starting program: /home/laurie/bomb
+
+Breakpoint 1, main (argc=1, argv=0xb7fd0ff4) at bomb.c:36
+36	bomb.c: No such file or directory.
+(gdb) x/24x 0x804b26c-0x40
+0x804b22c <array>:	  0x67667475	0x000001b0	0x00000006	0x00000000
+0x804b23c <node5>:	  0x000000d4	0x00000005	0x0804b230	0x000003e5
+0x804b24c <node4+4>:	0x00000004	0x0804b23c	0x0000012d	0x00000003
+0x804b25c <node3+8>:	0x0804b248	0x000002d5	0x00000002	0x0804b254
+0x804b26c <node1>:	  0x000000fd	0x00000001	0x0804b260	0x000003e9
+0x804b27c <n48+4>:	  0x00000000	0x00000000	0x0000002f	0x00000000
+(gdb) x/24x 0x804b26c-0x42
+0x804b22a <arra>:	    0x74756e70	0x01b06766	0x00060000	0x00000000
+0x804b23a <node6+10>:	0x00d40000	0x00050000	0xb2300000	0x03e50804
+0x804b24a <node4+2>:	0x00040000	0xb23c0000	0x012d0804	0x00030000
+0x804b25a <node3+6>:	0xb2480000	0x02d50804	0x00020000	0xb2540000
+0x804b26a <node2+10>:	0x00fd0804	0x00010000	0xb2600000	0x03e90804
+0x804b27a <n48+2>:	  0x00000000	0x00000000	0x002f0000	0x00000000
+```
+We can see 6 nodes and their values. We can input their indexes with their values decreasing. That's the password `4 2 6 3 1 5`
+
+We can finally concatenate all of the different phases:
+
+However it doesn't work, we must inverse len - 1 and len - 2 characters for some reason (https://stackoverflow.com/c/42network/questions/664).
+
+thor's password is `Publicspeakingisveryeasy.126241207201b2149opekmq426135`
