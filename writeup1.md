@@ -449,8 +449,11 @@ turtle is a language that describes the path of a turtle. At the end of end it's
 Can you digest the message? :)
 ```
 this implies md5 (Message Digest 5).
+
 let's see what the turtle has to say using https://www.calormen.com/jslogo/ and modifying the file accordingly.
+
 ![Turtle writes SLASH](./screens/turtle_slash.png)
+
 it writes 'slash', it did not work lowercased but `SLASHED` worked
 ```
 thor@BornToSecHackMe:~$ echo -n SLASH | md5sum
