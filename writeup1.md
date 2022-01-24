@@ -234,3 +234,7 @@ INTO OUTFILE '/var/www/forum/templates_c/webshell.php'
 > We find that `/forum/templates_c` is the only folder where this can be written. This basically create an HTML page with a textbox. When you click on the **Submit** button the input is evaluated directly in the shell where the website is hosted.
 
 We now have a shell in the working directory `/forum/templates_c`, we are logged as `www-data`. After listing a few directories, we find `/home/LOOKATME/password` that gives us the credentials pair `lmezard:G!@M6f4Eatau{sF"`. We can log into the vm directly, this doesn't work with ssh.
+
+lmezard has two files in his home directory:
+- README: `Complete this little challenge and use the result as password for user 'laurie' to login with ssh`
+- fun: tar file
