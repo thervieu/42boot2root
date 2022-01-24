@@ -235,6 +235,11 @@ INTO OUTFILE '/var/www/forum/templates_c/webshell.php'
 
 We now have a shell in the working directory `/forum/templates_c`, we are logged as `www-data`. After listing a few directories, we find `/home/LOOKATME/password` that gives us the credentials pair `lmezard:G!@M6f4Eatau{sF"`. We can log into the vm directly, this doesn't work with ssh.
 
+## lmezard
 lmezard has two files in his home directory:
 - README: `Complete this little challenge and use the result as password for user 'laurie' to login with ssh`
 - fun: tar file
+After decompressing fun we have a directory `ft_fun` that has 7k files inside it.
+One of those files is bigger and contains a c main and calls to getmeXX functions and a printf call telling us to 'digest' (md5) the password we'll find. Most functions have a `//fileXXX` that tells you where to look for findind the next letter. We did scripts to help us read those files. the python one basically prints only the `return 'char'`.
+```
+```
