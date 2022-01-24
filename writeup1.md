@@ -237,14 +237,115 @@ We now have a shell in the working directory `/forum/templates_c`, we are logged
 
 ## lmezard
 lmezard has two files in his home directory:
-- README: `Complete this little challenge and use the result as password for user 'laurie' to login with ssh`
-- fun: tar fil
+- README:
+```
+Complete this little challenge and use the result as password for user 'laurie' to login with ssh
+```
+- fun: tar file
 
 After decompressing fun we have a directory `ft_fun` that has 750 files inside it.
 
-One of those files is bigger and contains a c main and calls to getmeXX functions and a printf call telling us to 'digest' (md5) the password we'll find. Most functions have a `//fileXXX` that tells you where to look for findind the next letter. We did scripts to help us read. They basically concatenate the different files in the correct order. `node lmezard.js`
+One of those files is bigger and contains a c main and calls to getmeXX functions and a printf call telling us to 'digest' (md5) the password we'll find. Most functions have a `//fileXXX` that tells you where to look for findind the next letter. We did scripts to help us read. They basically concatenate the different files in the correct order. You can run `node lmezard.js`
 ```
 330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4 -
 ```
+we can connect to laurie with ssh
 
 ## laurie
+laurie has two files in her home directory:
+- README:
+```
+Diffuse this bomb!
+When you have all the password use it as "thor" user with ssh.
+
+HINT:
+P
+ 2
+ b
+ 
+o
+4
+
+NO SPACE IN THE PASSWORD (password is case sensitive)
+```
+- bomb: binary file
+
+We will use Hopper (a dissassembler) and gdb to get through all 6 phases.
+
+The bomb consists of 6 phases we must pass by inputing the correct value.
+Using Hopper we see that there are 6 functions named phaseX with X the phase number. There's also a secret_phase but we'll see that in the bonuses.
+### phase 1
+Hopper:
+```
+int phase_1(int arg0) {
+    eax = strings_not_equal(arg0, "Public speaking is very easy.");
+    if (eax != 0x0) {
+            eax = explode_bomb();
+    }
+    return eax;
+}
+```
+Checks if our input is `Public speaking is very easy.`
+
+### phase 2
+Using Hopper we can recreate the function
+```
+int phase2() {
+    inputs = read_six_numbers(stdin); // int[6]
+    if inputs.len() != 6
+        explode_bomb();
+    int factorials[6] = {1, 2, 3, 4, 5, 6}; // stored in the esi
+    
+    int i = 1;
+    do {
+        factorial = factorials[i - 1];
+        factorials[i] *= factorials[i - 1];
+        if (inputs[i] != factorial)
+           explode_bomb();
+    } while (i <= 5)
+    return 0;
+}
+```
+answer is the first 6 factorials so `1 2 6 24 120 720`
+
+### phase 3
+Using Hopper:
+```
+int phase3() {
+    int rtn = scanf(stdin, "%d %c %d", &first_int, &my_char, &second_int);
+    if rtn <= 2
+        explode_bomb();
+    if (first_int < 7)
+        switch case (first_int)
+            case 0:
+                cmp_char = 'q';
+                if (second_int != 777) {
+                        eax = explode_bomb();
+                }
+                else {
+                        if (cmp_char != my_char) {
+                                eax = explode_bomb();
+                        }
+                }
+                break;
+            case 1:
+                cmp_char = 'b';
+                if (second_int != 214) {
+                        explode_bomb();
+                }
+                else {
+                        if (cmp_char != my_char) {
+                                eax = explode_bomb();
+                        }
+                }
+                break;
+           // 6 more cases
+    }
+    else
+        explode_bomb();
+    return 0;
+}
+```
+There are 7 possible answers, we take the first one with the hint `1 b 214`
+
+### phase 4
