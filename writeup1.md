@@ -496,7 +496,7 @@ Dump of assembler code for function main:
    0x08048436 <+66>:	leave
    0x08048437 <+67>:	ret
 ```
-we can overflow, using a simple python program we can find that the offset is 140.
+we can overflow into the saved eip (called on return), using a simple python program we can find that the offset is 140.
 
 ### ret2libc attack
 find the addresses of system, exit and "/bin/sh"
