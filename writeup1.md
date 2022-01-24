@@ -435,3 +435,25 @@ We can finally concatenate all of the different phases:
 However it doesn't work, we must inverse len - 1 and len - 2 characters for some reason (https://stackoverflow.com/c/42network/questions/664).
 
 thor's password is `Publicspeakingisveryeasy.126241207201b2149opekmq426135`
+
+## thor
+laurie has two files in her home directory:
+- README:
+```
+Finish this challenge and use the result as password for 'zaz' user.
+```
+- turtle: turtle language
+
+turtle is a language that describes the path of a turtle. At the end of end it's written:
+```
+Can you digest the message? :)
+```
+this implies md5 (Message Digest 5).
+let's see what the turtle has to say using https://www.calormen.com/jslogo/ and modifying the file accordingly.
+![Turtle writes SLASH](./screens/turtle_slash.png)
+it writes 'slash', it did not work lowercased but `SLASHED` worked
+```
+thor@BornToSecHackMe:~$ echo -n SLASH | md5sum
+646da671ca01bb5d84dbb5fb2238dc8e  -
+```
+zaz's password is 646da671ca01bb5d84dbb5fb2238dc8e
