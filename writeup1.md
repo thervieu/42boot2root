@@ -245,7 +245,9 @@ Complete this little challenge and use the result as password for user 'laurie' 
 
 After decompressing fun we have a directory `ft_fun` that has 750 files inside it.
 
-One of those files is bigger and contains a c main and calls to getmeXX functions and a printf call telling us to 'digest' (md5) the password we'll find. Most functions have a `//fileXXX` that tells you where to look for findind the next letter. We did scripts to help us read. They basically concatenate the different files in the correct order. You can run `node lmezard.js`
+One of those files is bigger and contains a c main and calls to getmeXX functions and a printf call telling us to 'digest' (md5) the password we'll find.
+
+Most functions have a `//fileXXX` that tells you where to look for findind the next letter. We did scripts to help us read. They basically concatenate the different files in the correct order. You can run `node lmezard.js`
 ```
 330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4 -
 ```
@@ -403,7 +405,9 @@ uses each character of the string we put in and does & 0xf with them which creat
 
 ### phase6
 Hopper tells us that address 0x804b26c is called.
+
 phase6 takes 6 ints, checks that they are <= 6 then tries to permutate data in the esi then checks if that data is in decreasing order
+
 Hopper tells us that esi is set at address 0x804b26c.
 ```
 laurie@BornToSecHackMe:~$ gdb -q bomb
