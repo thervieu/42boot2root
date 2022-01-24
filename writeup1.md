@@ -243,6 +243,8 @@ Complete this little challenge and use the result as password for user 'laurie' 
 ```
 - fun: tar file
 
+we can get this file out of the vm using lmzeard's credentials to log into the ftp server (you may need to put the service in passive mode)
+
 After decompressing fun we have a directory `ft_fun` that has 750 files inside it.
 
 One of those files is bigger and contains a c main and calls to getmeXX functions and a printf call telling us to 'digest' (md5) the password we'll find.
