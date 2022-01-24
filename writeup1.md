@@ -458,7 +458,7 @@ let's see what the turtle has to say using https://www.calormen.com/jslogo/ and 
 
 ![Turtle writes SLASH](./screens/turtle_slash.png)
 
-it writes 'slash', it did not work lowercased but `SLASHED` worked
+it writes 'slash', it did not work lowercased but `SLASH` worked
 ```
 thor@BornToSecHackMe:~$ echo -n SLASH | md5sum
 646da671ca01bb5d84dbb5fb2238dc8e  -
