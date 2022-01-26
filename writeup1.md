@@ -237,7 +237,7 @@ We now have a shell in the working directory `/forum/templates_c`, we are logged
 
 ## First user, `lmezard`.
 
-We can log into the vVM directly but not via ssh due to some SSH configuration. We can confirm this via the webshell by checking the file `/etc/sshd_config` where the current host ssh configuration is located.
+We can log into the vVM directly but not via ssh due to some SSH configuration. We can confirm this via the webshell by checking the file `/etc/ssh/sshd_config` where the current host ssh configuration is located.
 
 ```shell
   $> cat /etc/ssh/sshd_config
