@@ -23,6 +23,6 @@ for (const codePiece of codePieces) {
 }
 
 writeFileSync('main.c', sourceCode)
-exec('gcc main.c ; echo -n $(./a.out | grep PASSWORD | cut -d " " -f4) | sha256sum', (error, stdout, stderr) => {
+exec('gcc main.c ; echo -n $(./a.out | grep PASSWORD | cut -d " " -f4) | sha256sum | cut -d " " -f1', (error, stdout, stderr) => {
   console.log(stdout)
 })

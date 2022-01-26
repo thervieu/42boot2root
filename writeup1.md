@@ -1,6 +1,6 @@
-# First Breach
+# First Breach.
 
-## Find the machine's IP
+## Find the machine's IP.
 
 When started, the machine asks us for a login, showing nothing but this prompt. Using the **Host Network Manager** from VirtualBox we can setup a local network between all virtual machines and the host one. By doing so, we get an IP that will be later referenced as `<IP>`.
 
@@ -14,7 +14,7 @@ Then, we select the Boot to Root machine and go to Machine > Settings > Network 
 
 ![Attach network to the machine](./screens/bind-network-to-machine.png)
 
-## Analyze local network
+## Analyze local network.
 
 Now all we have to do is to scan the network with [nmap](https://nmap.org/).
 
@@ -48,7 +48,7 @@ Now all we have to do is to scan the network with [nmap](https://nmap.org/).
 
 > `/24` tells to nmap to scan the range of adresses that fit this mask. In our case from `192.168.56.0` to `192.168.56.255`.
 
-## Website discovery
+## Website discovery.
 
 Thanks to **nmap**, we can see that three machines are running in the same network, one on which we can connect with ssh and another with a bunch of open ports. We'll focus on that one since port `80` and `443` are open on it meaning there is a **website bound to the machine that we can access via HTTP / HTTPS requests**.
 
@@ -135,7 +135,7 @@ So we know that this website is powered by Apache, some known vulnerabilities co
 
 Thanks to this scan, we can see that three services are available to us, a forum, phpmyadmin and a mail service...
 
-## Forum analysis
+## Forum analysis.
 
 On the forum's main page, we have some information at our disposal. At the top right corner a **Log in** and **Contact** buttons and some posts we can read. Only `Probleme login ?` by `lmezard` seems to be interesting to go through. It look like a kind of logs.
 
@@ -161,7 +161,7 @@ Oct 5 14:57:56 BornToSecHackMe sudo: root : TTY=pts/0 ; PWD=/home/admin ; USER=r
 
 We can see that someone most likely swapped his username with its password (`!q\]Ej?*5K5cy*AJ`). Since the logs tell us that user `lmezard` succesfully logged himself 30 seconds after, we can assume that it was his password. If we click on the **Log in** button and try these credentials we indeed access this account.
 
-# Webmail analysis
+# Webmail analysis.
 Now that we are logged on the forum we can access her profile and we can retrieve its email which is as depicted bellow, `laurie@borntosec.net`.
 
 ![lmezard-email](./screens/lmezard-email.png)
@@ -185,7 +185,7 @@ Best regards.
 ```
 As you can see, this mail gives us administrator access to the databases with the credentials pair `root:Fg-'kKXBj87E:aJ$`.
 
-## PHPMyAdmin and webshell exploit
+## PHPMyAdmin and webshell exploit.
 
 Now that we have these credentials we can log as root in PHPmyAdmin. There is a known vulnerability with this service known as [Webshell upload](https://www.netspi.com/blog/technical/network-penetration-testing/linux-hacking-case-studies-part-3-phpmyadmin/). To upload this shell to the website we need to find a place where we have rights to write files. So we are back to dirb... We'll look through the forum to find possibles directories.
 
@@ -235,13 +235,19 @@ INTO OUTFILE '/var/www/forum/templates_c/webshell.php'
 
 We now have a shell in the working directory `/forum/templates_c`, we are logged as `www-data`. After listing a few directories, we find `/home/LOOKATME/password` that gives us the credentials pair `lmezard:G!@M6f4Eatau{sF"`.
 
-## First user, `lmezard`
+## First user, `lmezard`.
 
 We can log into the vVM directly but not via ssh due to some SSH configuration. We can confirm this via the webshell by checking the file `/etc/sshd_config` where the current host ssh configuration is located.
 
 ```shell
-  $> cat /etc/sshd_config
-  //ADD CONFIG HERE
+  $> cat /etc/ssh/sshd_config
+  ...
+  RSAAuthentication yes
+  PubkeyAuthentication yes
+  #AuthorizedKeysFile     %h/.ssh/authorized_keys
+  AllowUsers ft_root zaz thor laurie
+  #DenyUsers *
+  ...
 ```
 
 > As it is stated in [sshd configuration](https://linux.die.net/man/5/sshd_config) documentation, `AllowUsers` option is listing all the users that can use ssh to remotely connect to the machine, `lmezard` is not one of them.
@@ -257,44 +263,132 @@ Once logged in the VM we can find two files in her home directory, a `README` fi
 
 > [`file`](https://linux.die.net/man/1/file) helps us to determine the type of a file, here it tell us it is an archive so we can use [`tar`](https://linux.die.net/man/1/tar) to work with it.
 
-After decompressing fun we have a directory `ft_fun` that has 750 files inside it.
 
-we can get this file out of the vm using lmzeard's credentials to log into the ftp server (you may need to put the service in passive mode)
+From the **nmap** scan we remember that a [ftp](https://linux.die.net/man/1/ftp) service is running... let's connect as `lmezard` to extract files and work on it directly outside of the VM.
 
-One of those files is bigger and contains a c main and calls to getmeXX functions and a printf call telling us to 'digest' (md5) the password we'll find.
+```shell
+  $> ftp
+  ftp> open
+  (to) <NETWORK-IP2>
 
-Most functions have a `//fileXXX` that tells you where to look for findind the next letter. We did scripts to help us read. They basically concatenate the different files in the correct order. You can run `node lmezard.js`
+  Connected to <NETWORK-IP2>.
+  220 Welcome on this server    
+
+  Name (<NETWORK-IP2>:<user): lmezard
+  331 Please specify the password.
+  Password: G!@M6f4Eatau{sF"
+
+  230 Login successful.
+  Remote system type is UNIX.
+  Using binary mode to transfer files.
+
+  ftp> get fun
+  local: fun remote: fun
+  200 PORT command successful. Consider using PASV.
+  150 Opening BINARY mode data connection for fun (808960 bytes).
+  226 Transfer complete.
+
+  ftp> exit
+  221 Goodbye.
 ```
-330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4 -
+
+> The `get` command download the requested file from the service to our machine.
+
+
+After decompressing the archive, we have a directory `ft_fun` with a bunch of weird files in it.
+
+```shell
+  $> ls -l ft_fun
+  ...
+  -rw-r----- 1 kilian kilian    28 août  13  2015 1SDTO.pcap
+  -rw-r----- 1 kilian kilian    28 août  13  2015 1TWEB.pcap
+  -rw-r----- 1 kilian kilian    28 août  13  2015 1YG75.pcap
+  -rw-r----- 1 kilian kilian    44 août  13  2015 1ZNSV.pcap
+  -rw-r----- 1 kilian kilian    25 août  13  2015 20L0Z.pcap
+  -rw-r----- 1 kilian kilian    44 août  13  2015 257IO.pcap
+  -rw-r----- 1 kilian kilian    44 août  13  2015 27RWO.pcap
+  -rw-r----- 1 kilian kilian    44 août  13  2015 2AHUV.pcap
+  ...
+  $> cat ft_fun/27RWO.pcap 
+    printf("Hahahaha Got you!!!\n");
+
+    //file308
 ```
-we can connect to laurie with ssh
 
-## laurie
-laurie has two files in her home directory:
-- README:
+> One of those files is bigger and contains a C main and calls to `getmeXX` functions and a printf call telling us to **digest** the password we'll find.
+
+We understand quickly that we need to write a C file and compile it with all of those little code snippets, sorting them by the comment on the last line of the file giving their order. To automate this tedious process we wrote the following script...
+
+```js
+const { readdirSync, readFileSync, writeFileSync } = require('fs')
+const { exec, execSync } = require('child_process')
+
+execSync('tar -xf fun')
+
+const files = readdirSync('./ft_fun')
+const codePieces = []
+
+for (const file of files) {
+  const fileData = readFileSync(`./ft_fun/${file}`).toString()
+  const fileNumber = parseInt(fileData.split('\n').at(-1).substring('//file'.length))
+  const code = fileData.replace(/(\/\/file\d+)/g, '')
+
+  codePieces.push({ code, fileNumber })
+}
+
+codePieces.sort((a, b) => (a.fileNumber > b.fileNumber) ? 1 : -1)
+
+let sourceCode = ''
+
+for (const codePiece of codePieces) {
+  sourceCode += codePiece.code
+}
+
+writeFileSync('main.c', sourceCode)
+exec('gcc main.c ; echo -n $(./a.out | grep PASSWORD | cut -d " " -f4) | sha256sum | cut -d " " -f1', (error, stdout, stderr) => {
+  console.log(stdout)
+})
 ```
-Diffuse this bomb!
-When you have all the password use it as "thor" user with ssh.
 
-HINT:
-P
- 2
- b
- 
-o
-4
+> This script begins with extracting all the files from the archive, then constructing an array of all the `files` names. Then, it will read the content of each file, extract its position and remove the `//fileXXX` line from the content and finally it will sort everything by their position before creating a string containing the source code before writting it inside `main.c`. Last task is to compile it, then extract the password and digest it with **SHA256**.
 
-NO SPACE IN THE PASSWORD (password is case sensitive)
 ```
-- bomb: binary file
-
-We will use Hopper (a dissassembler) and gdb to get through all 6 phases.
-
-The bomb consists of 6 phases we must pass by inputing the correct value.
-Using Hopper we see that there are 6 functions named phaseX with X the phase number. There's also a secret_phase but we'll see that in the bonuses.
-### phase 1
-Hopper:
+  $> node lmezard.js 
+  330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
 ```
+
+We now have another credentials pair: `laurie:330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4`, usable with ssh this time!
+
+## `laurie`, the Bomb minigame.
+
+Two files are in its `home` directory... Once again a `README` and a binary called `bomb`.
+
+```
+  $> cat README
+  Diffuse this bomb!
+  When you have all the password use it as "thor" user with ssh.
+
+  HINT:
+  P
+  2
+  b
+
+  o
+  4
+
+  NO SPACE IN THE PASSWORD (password is case sensitive).    
+```
+
+We'll use [Hopper](https://www.hopperapp.com/index.html) and [gdb](https://linux.die.net/man/1/gdb) to get through this challenge.
+
+The program consists of a set of string checks waiting for us to input the correct value each time.
+Using Hopper we see that there are 6 functions named `phaseX` with X. There's also a ``secret_phase`` but we'll come back to it later.
+
+### Phase 1, String comparison.
+
+Hopper gives us the following code:
+
+```C
 int phase_1(int arg0) {
     eax = strings_not_equal(arg0, "Public speaking is very easy.");
     if (eax != 0x0) {
@@ -303,16 +397,19 @@ int phase_1(int arg0) {
     return eax;
 }
 ```
-Checks if our input is `Public speaking is very easy.`
 
-### phase 2
-Using Hopper we can recreate the function
-```
-int phase2() {
+> Pretty straight forward, simply checks if our input is `Public speaking is very easy.`.
+
+### Phase 2, Factorials.
+
+Using Hopper we can recreate the function:
+
+```C
+int phase_2() {
     inputs = read_six_numbers(stdin); // int[6]
     if inputs.len() != 6
         explode_bomb();
-    int factorials[6] = {1, 2, 3, 4, 5, 6}; // stored in the esi
+    int factorials[6] = {1, 2, 3, 4, 5, 6}; // stored in esi register
     
     int i = 1;
     do {
@@ -324,12 +421,15 @@ int phase2() {
     return 0;
 }
 ```
-answer is the first 6 factorials so `1 2 6 24 120 720`
 
-### phase 3
-Using Hopper:
-```
-int phase3() {
+> For this one we need to input the result of factorials from 1 to 6. So answer is `1 2 6 24 120 720`.
+
+### Phase 3, Switch case.
+
+Hopper gives us the following code:
+
+```C
+int phase_3() {
     int rtn = scanf(stdin, "%d %c %d", &first_int, &my_char, &second_int);
     if rtn <= 2
         explode_bomb();
@@ -357,17 +457,21 @@ int phase3() {
                         }
                 }
                 break;
-           // 6 more cases
+           ... // There are 6 more cases but they are not interesting.
     }
     else
         explode_bomb();
     return 0;
 }
 ```
-There are 7 possible answers, we take the first one with the hint given `b` so `1 b 214`
 
-### phase 4
-```
+> This one waits for one number, a character and another number to be input. There are multiple possible answers, We take the first one because the hint for this phase is `b`. So `1 b 214` should what's expected.
+
+### Phase 4, Fibonacci sequence.
+
+Using Hopper we can recreate the function:
+
+```C
 int func4(int fibo_index) {
     int fibo1;
     if (fibo_index > 1) {
@@ -394,10 +498,14 @@ int phase_4() {
     return eax;
 }
 ```
-takes an int as input and returns the fibonacci number corresponding to that index. checks if it is 55, which is the 10th index. However their function doesn't go until [0, 1] for the starting numbers but [1, 1]. So we must input `9`.
 
-### phase 5
-```
+> This one takes a int as input and returns a term in the Fibonacci sequense corresponding to that index. It checks an index that gives `55`, which is the 10th index. However `func4()` stops at index 1 so the sequensse starts with `[1, 1]` and not `[0 , 1]`. So we need to subscract one itteration from our guess to find the correct value which is `9`.
+
+### Phase 5, Cipher.
+
+Using Hopper we can recreate the function:
+
+```C
 void phase_5() {
     read_input(stdin, &str);
     if (strlen(str) != 6) {
@@ -417,47 +525,82 @@ void phase_5() {
     return;
 }
 ```
-uses each character of the string we put in and does & 0xf with them which creates a number below 16 which is then used as index in "isrveawhobpnutfg". The newly constructed string must then be equal to giants. We did a quick script to get the possible options (phase5.py). There are four options, let's take `opekmq`.
+> It uses each character of the string we put in and does a [binary AND](https://en.wikipedia.org/wiki/Bitwise_operation) with `0xf` with them which creates a number below `16` used as index in `isrveawhobpnutfg`. The newly constructed string must then be equal to `giants`.
 
-### phase6
-Hopper tells us that address 0x804b26c is called.
+We did a quick script to get the possible combinaisons that matches the result.
 
-phase6 takes 6 ints, checks that they are <= 6 then tries to permutate data in the esi then checks if that data is in decreasing order
+```python
+#!/usr/bin/python3
+index = 'isrveawhobpnutfg'
 
-Hopper tells us that esi is set at address 0x804b26c.
+for i in 'abcdefghijklmnopqrstuvwxyz':
+    if index[ord(i) & 0xf] in 'giants':
+        print("{} : {}".format(index[ord(i) & 0xf], i))
 ```
-laurie@BornToSecHackMe:~$ gdb -q bomb
-Reading symbols from /home/laurie/bomb...done.
-(gdb) b main
-Breakpoint 1 at 0x80489b7: file bomb.c, line 36.
-(gdb) r
-Starting program: /home/laurie/bomb
 
-Breakpoint 1, main (argc=1, argv=0xb7fd0ff4) at bomb.c:36
-36	bomb.c: No such file or directory.
-(gdb) x/20x 0x804b26c-0x40
-0x804b22c <array>:	  0x67667475	0x000001b0	0x00000006	0x00000000
-0x804b23c <node5>:	  0x000000d4	0x00000005	0x0804b230	0x000003e5
-0x804b24c <node4+4>:	0x00000004	0x0804b23c	0x0000012d	0x00000003
-0x804b25c <node3+8>:	0x0804b248	0x000002d5	0x00000002	0x0804b254
-0x804b26c <node1>:	  0x000000fd	0x00000001	0x0804b260	0x000003e9
-(gdb) x/20x 0x804b26c-0x42
-0x804b22a <arra>:	    0x74756e70	0x01b06766	0x00060000	0x00000000
-0x804b23a <node6+10>:	0x00d40000	0x00050000	0xb2300000	0x03e50804
-0x804b24a <node4+2>:	0x00040000	0xb23c0000	0x012d0804	0x00030000
-0x804b25a <node3+6>:	0xb2480000	0x02d50804	0x00020000	0xb2540000
-0x804b26a <node2+10>:	0x00fd0804	0x00010000	0xb2600000	0x03e90804
+If we run the script, it will prompts us which letter maps to each of the ones forming the word `giants`.
+
+```shell
+  $> python3 phase5.py
+  s : a
+  a : e
+  n : k
+  t : m
+  g : o
+  i : p
+  s : q
+  a : u
 ```
-We can see 6 nodes and their values. We can input their indexes with their values decreasing. That's the password `4 2 6 3 1 5`
+> As we can see, since `s` and `a` have two valid mapped characters, there are 4 possible solutions: `opekma`, `opekmq`, `opukma` and `opukmq`. After trying them all, we see that `opekmq` is the answer.
 
-We can finally concatenate all of the different phases:
+### Phase 6, 
 
-However it doesn't work, we must inverse len - 1 and len - 2 characters for some reason (https://stackoverflow.com/c/42network/questions/664).
+Using Hopper we can tell:
 
-`thor`'s password is `Publicspeakingisveryeasy.126241207201b2149opekmq426135`
+- `phase_6()` takes six ints and checks that they're less than 6.
+- Permutate data in `esi` using our input then checks if that data is in decreasing order.
+- `esi` registery holds what's at address `0x804b26c`.
 
-## thor
-laurie has two files in her home directory:
+Now let's use **gdb** to figure out which order we need to set our inputs.
+
+```shell
+  $> gdb -q bomb
+  Reading symbols from /home/laurie/bomb...done.
+  (gdb) b main
+  Breakpoint 1 at 0x80489b7: file bomb.c, line 36.
+  (gdb) r
+  Starting program: /home/laurie/bomb
+
+  Breakpoint 1, main (argc=1, argv=0xb7fd0ff4) at bomb.c:36
+  36  bomb.c: No such file or directory.
+  (gdb) x/20x 0x804b26c-0x40
+  0x804b22c <array>:    0x67667475	0x000001b0	0x00000006	0x00000000
+  0x804b23c <node5>:    0x000000d4	0x00000005	0x0804b230	0x000003e5
+  0x804b24c <node4+4>:	0x00000004	0x0804b23c	0x0000012d	0x00000003
+  0x804b25c <node3+8>:	0x0804b248	0x000002d5	0x00000002	0x0804b254
+  0x804b26c <node1>:    0x000000fd	0x00000001	0x0804b260	0x000003e9
+  (gdb) x/20x 0x804b26c-0x42
+  0x804b22a <arra>:	    0x74756e70	0x01b06766	0x00060000	0x00000000
+  0x804b23a <node6+10>:	0x00d40000	0x00050000	0xb2300000	0x03e50804
+  0x804b24a <node4+2>:	0x00040000	0xb23c0000	0x012d0804	0x00030000
+  0x804b25a <node3+6>:	0xb2480000	0x02d50804	0x00020000	0xb2540000
+  0x804b26a <node2+10>:	0x00fd0804	0x00010000	0xb2600000	0x03e90804
+```
+> We can see 6 nodes and their values. All we have to do is to tell their descending order depending on which value they hold. The answer is, indeed, `4 2 6 3 1 5`.
+
+Now that we have all the password we need to concatenate them into the final result which is:
+
+```
+Publicspeakingisveryeasy.126241207201b2149opekmq426315
+```
+> However it doesn't work, for some reason we need to swap third-to-last and second-to-last characters. [Source](https://stackoverflow.com/c/42network/questions/664).
+
+We now have another credentials pair: `thor:Publicspeakingisveryeasy.126241207201b2149opekmq426135`.
+
+## `thor`, Draw the answer.
+
+Two files are in its `home` directory... Once more, a `README` and a text file `turtle`.
+
 - README:
 ```
 Finish this challenge and use the result as password for 'zaz' user.
