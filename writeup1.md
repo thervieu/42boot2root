@@ -233,19 +233,33 @@ INTO OUTFILE '/var/www/forum/templates_c/webshell.php'
 
 > We find that `/forum/templates_c` is the only folder where this can be written. This basically create an HTML page with a textbox. When you click on the **Submit** button the input is evaluated directly in the shell where the website is hosted.
 
-We now have a shell in the working directory `/forum/templates_c`, we are logged as `www-data`. After listing a few directories, we find `/home/LOOKATME/password` that gives us the credentials pair `lmezard:G!@M6f4Eatau{sF"`. We can log into the vm directly, this doesn't work with ssh.
+We now have a shell in the working directory `/forum/templates_c`, we are logged as `www-data`. After listing a few directories, we find `/home/LOOKATME/password` that gives us the credentials pair `lmezard:G!@M6f4Eatau{sF"`.
 
-## lmezard
-lmezard has two files in his home directory:
-- README:
-```
-Complete this little challenge and use the result as password for user 'laurie' to login with ssh
-```
-- fun: tar file
+## First user, `lmezard`
 
-we can get this file out of the vm using lmzeard's credentials to log into the ftp server (you may need to put the service in passive mode)
+We can log into the vVM directly but not via ssh due to some SSH configuration. We can confirm this via the webshell by checking the file `/etc/sshd_config` where the current host ssh configuration is located.
+
+```shell
+  $> cat /etc/sshd_config
+  //ADD CONFIG HERE
+```
+
+> As it is stated in [sshd configuration](https://linux.die.net/man/5/sshd_config) documentation, `AllowUsers` option is listing all the users that can use ssh to remotely connect to the machine, `lmezard` is not one of them.
+
+Once logged in the VM we can find two files in her home directory, a `README` file and a binary called `fun`.
+
+```shell
+  $> cat README
+  Complete this little challenge and use the result as password for user 'laurie' to login with ssh
+  $> file fun
+  fun: POSIX tar archive (GNU)
+```
+
+> [`file`](https://linux.die.net/man/1/file) helps us to determine the type of a file, here it tell us it is an archive so we can use [`tar`](https://linux.die.net/man/1/tar) to work with it.
 
 After decompressing fun we have a directory `ft_fun` that has 750 files inside it.
+
+we can get this file out of the vm using lmzeard's credentials to log into the ftp server (you may need to put the service in passive mode)
 
 One of those files is bigger and contains a c main and calls to getmeXX functions and a printf call telling us to 'digest' (md5) the password we'll find.
 
