@@ -390,11 +390,11 @@ Hopper gives us the following code:
 
 ```C
 int phase_1(int arg0) {
-    eax = strings_not_equal(arg0, "Public speaking is very easy.");
-    if (eax != 0x0) {
-            eax = explode_bomb();
-    }
-    return eax;
+  eax = strings_not_equal(arg0, "Public speaking is very easy.");
+  if (eax != 0x0) {
+     eax = explode_bomb();
+  }
+  return eax;
 }
 ```
 
@@ -406,19 +406,19 @@ Using Hopper we can recreate the function:
 
 ```C
 int phase_2() {
-    inputs = read_six_numbers(stdin); // int[6]
-    if inputs.len() != 6
-        explode_bomb();
-    int factorials[6] = {1, 2, 3, 4, 5, 6}; // stored in esi register
-    
-    int i = 1;
-    do {
-        factorial = factorials[i - 1];
-        factorials[i] *= factorials[i - 1];
-        if (inputs[i] != factorial)
-           explode_bomb();
-    } while (i <= 5)
-    return 0;
+  inputs = read_six_numbers(stdin); // int[6]
+  if inputs.len() != 6
+    explode_bomb();
+  int factorials[6] = {1, 2, 3, 4, 5, 6}; // stored in esi register
+  
+  int i = 1;
+  do {
+    factorial = factorials[i - 1];
+    factorials[i] *= factorials[i - 1];
+    if (inputs[i] != factorial)
+      explode_bomb();
+  } while (i <= 5)
+  return 0;
 }
 ```
 
@@ -430,38 +430,38 @@ Hopper gives us the following code:
 
 ```C
 int phase_3() {
-    int rtn = scanf(stdin, "%d %c %d", &first_int, &my_char, &second_int);
-    if rtn <= 2
-        explode_bomb();
-    if (first_int < 7)
-        switch case (first_int)
-            case 0:
-                cmp_char = 'q';
-                if (second_int != 777) {
-                        eax = explode_bomb();
-                }
-                else {
-                        if (cmp_char != my_char) {
-                                eax = explode_bomb();
-                        }
-                }
-                break;
-            case 1:
-                cmp_char = 'b';
-                if (second_int != 214) {
-                        explode_bomb();
-                }
-                else {
-                        if (cmp_char != my_char) {
-                                eax = explode_bomb();
-                        }
-                }
-                break;
-           ... // There are 6 more cases but they are not interesting.
-    }
-    else
-        explode_bomb();
-    return 0;
+  int rtn = scanf(stdin, "%d %c %d", &first_int, &my_char, &second_int);
+  if rtn <= 2
+    explode_bomb();
+  if (first_int < 7)
+    switch case (first_int)
+      case 0:
+        cmp_char = 'q';
+        if (second_int != 777) {
+          eax = explode_bomb();
+        }
+        else {
+          if (cmp_char != my_char) {
+            eax = explode_bomb();
+          }
+        }
+        break;
+      case 1:
+        cmp_char = 'b';
+        if (second_int != 214) {
+          explode_bomb();
+        }
+        else {
+          if (cmp_char != my_char) {
+            eax = explode_bomb();
+          }
+        }
+        break;
+      ... // There are 6 more cases but they are not interesting.
+  }
+  else
+    explode_bomb();
+  return 0;
 }
 ```
 
@@ -473,29 +473,29 @@ Using Hopper we can recreate the function:
 
 ```C
 int func4(int fibo_index) {
-    int fibo1;
-    if (fibo_index > 1) {
-            fibo1 = func4(ebx - 1);
-            fibo2 = func4(ebx - 2);
-            fibo1 = fibo1 + fibo2;
-    }
-    else {
-            fibo1 = 0x1;
-    }
-    return fibo1;
+  int fibo1;
+  if (fibo_index > 1) {
+    fibo1 = func4(ebx - 1);
+    fibo2 = func4(ebx - 2);
+    fibo1 = fibo1 + fibo2;
+  }
+  else {
+    fibo1 = 0x1;
+  }
+  return fibo1;
 }
 
 int phase_4() {
-    if ((sscanf(stdin, "%d", &fibo_index) == 1) && (fibo_index > 0)) {
-            int fibo55 = func4(fibo_index);
-            if (fibo555 != 55) {
-                    eax = explode_bomb();
-            }
+  if ((sscanf(stdin, "%d", &fibo_index) == 1) && (fibo_index > 0)) {
+    int fibo55 = func4(fibo_index);
+    if (fibo555 != 55) {
+      eax = explode_bomb();
     }
-    else {
-            explode_bomb();
-    }
-    return eax;
+  }
+  else {
+    explode_bomb();
+  }
+  return eax;
 }
 ```
 
@@ -507,22 +507,22 @@ Using Hopper we can recreate the function:
 
 ```C
 void phase_5() {
-    read_input(stdin, &str);
-    if (strlen(str) != 6) {
-        explode_bomb();
+  read_input(stdin, &str);
+  if (strlen(str) != 6) {
+    explode_bomb();
+  }
+  else {
+    int i = 0;
+    char *indexMe = "isrveawhobpnutfg";
+    do {
+      str[i] = indexMe[str[i] & 0xf];
+      i++;
+    } while (edx <= 5);
+    if strcmp(str, "giants" != 0) {
+      explode_bomb();
     }
-    else {
-            int i = 0;
-            char *indexMe = "isrveawhobpnutfg";
-            do {
-                    str[i] = indexMe[str[i] & 0xf];
-                    i++;
-            } while (edx <= 5);
-            if strcmp(str, "giants" != 0) {
-                explode_bomb();
-            }
-    }
-    return;
+  }
+  return;
 }
 ```
 > It uses each character of the string we put in and does a [binary AND](https://en.wikipedia.org/wiki/Bitwise_operation) with `0xf` with them which creates a number below `16` used as index in `isrveawhobpnutfg`. The newly constructed string must then be equal to `giants`.
@@ -534,8 +534,8 @@ We did a quick script to get the possible combinaisons that matches the result.
 index = 'isrveawhobpnutfg'
 
 for i in 'abcdefghijklmnopqrstuvwxyz':
-    if index[ord(i) & 0xf] in 'giants':
-        print("{} : {}".format(index[ord(i) & 0xf], i))
+  if index[ord(i) & 0xf] in 'giants':
+    print("{} : {}".format(index[ord(i) & 0xf], i))
 ```
 
 If we run the script, it will prompts us which letter maps to each of the ones forming the word `giants`.
