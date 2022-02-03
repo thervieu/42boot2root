@@ -1,4 +1,4 @@
-# First breach.
+# Long way.
 
 This breach is a long process that will make us go throw a lot of systems and various vulnerabilities to get an overview of what is available to us. Click on each subcategories to be redirected to the full explanations.
 

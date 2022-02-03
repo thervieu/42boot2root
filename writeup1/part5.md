@@ -1,4 +1,4 @@
-# Turle am I right?
+# Turtle am I right?
 
 Two files are in its `home` directory... Once more, a `README` and a text file `turtle`.
 

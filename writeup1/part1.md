@@ -45,3 +45,5 @@ Now all we have to do is to scan the network with [`nmap`](https://linux.die.net
 ```
 
 > `/24` tells to nmap to scan the range of adresses that fit this mask. In our case from `192.168.56.0` to `192.168.56.255`.
+
+The one we want to connect is `<NETWORK-IP2>`.
