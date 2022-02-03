@@ -32,8 +32,12 @@ It outputs a `squashfs-root` directory with what you'd expect from a filesystem.
 
 ```shell
   $> sudo cat squashfs-root/root/.bash_history
+  ...
   adduser zaz
   646da671ca01bb5d84dbb5fb2238dc8e
+  ...
 ```
+
+> [`adduser`](https://linux.die.net/man/8/adduser) creates a new user for this machine. The password was incorrectly input twice, so we can grab it.
 
 With this credentials pair, we can directly connect to the machine via [`ssh`](https://linux.die.net/man/1/ssh) after fiding machine's IP like in [Writeup 1, part 1](../../writeup1/part1.md). This exploit allow us to skip directly to `zaz` exploit like in [Writeup 1, part 6](../../writeup1/part6.md).
