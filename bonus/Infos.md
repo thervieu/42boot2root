@@ -28,3 +28,8 @@ Database `forum_db`, table `mlf2_userdata` gives us a lot of details.
 - User `admin` has a special type and a contact email.
 - Users `qudevide` and `wandre` weren't used at all during our exploits.
 - As `root` if we find how `user_pw` are hashed, we could access all accounts.
+
+## Possible leads
+
+- [CVE-2021-3156 sudoedit vulnerability](https://blog.qualys.com/vulnerabilities-threat-research/2021/01/26/cve-2021-3156-heap-based-buffer-overflow-in-sudo-baron-samedit).
+- IMAP logs from `zaz` session.
