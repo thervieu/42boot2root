@@ -104,7 +104,7 @@ int phase_3() {
 }
 ```
 
-> This one waits for one number, a character and another number to be input. There are multiple possible answers, We take the first one because the hint for this phase is `b`. So `1 b 214` should what's expected.
+> This one waits for one number, a character and another number to be input. There are multiple possible answers, We take the first one because the hint for this phase is `b`. So let's use `1 b 214`.
 
 # Phase 4, Fibonacci sequence.
 
